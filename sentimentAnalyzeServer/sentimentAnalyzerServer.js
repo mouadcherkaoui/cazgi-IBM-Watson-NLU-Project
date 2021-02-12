@@ -35,7 +35,24 @@ app.get("/url/emotion", (req,res) => {
 });
 
 app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+    var result = "";
+    var nlu = sentimentNLUInstance();
+    nlu.analyze(nlu.analyze(
+        {
+            text: req.body, // Buffer or String
+            features: {
+            concepts: {},
+            keywords: {}
+            }
+        })
+        .then(response => {
+            result = JSON.stringify(response.result, null, 2);
+            console.log(result);
+        })
+        .catch(err => {
+            console.log('error: ', err);
+        }));
+    return res.send("url sentiment for "+req.query.url + ":" + result);
 });
 
 app.get("/text/emotion", (req,res) => {
@@ -46,7 +63,7 @@ app.get("/text/sentiment", (req,res) => {
     return res.send("text sentiment for "+req.query.text);
 });
 
-let server = app.listen(8080, () => {
+let server = app.listen(3000, () => {
     console.log('Listening', server.address().port)
 })
 
